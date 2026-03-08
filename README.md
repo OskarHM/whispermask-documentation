@@ -6,5 +6,10 @@ whisperMask.local
 password: swhiscool
 
 The raspberry controlling the Translation is reachable under this address: 
-siemens-display-whisper-mask
+siemens-display-whisper-mask.local
 password: swh
+
+## Starting the User Interface
+
+
+## Starting the controller and translation service
