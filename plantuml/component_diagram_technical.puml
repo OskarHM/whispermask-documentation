@@ -1,0 +1,94 @@
+@startuml
+title Whisper Mask Client – UML-Komponentendiagramm
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "User" as User
+
+component "Client Controller\n(run())" as Controller
+component "Audio Input\n(PyAudio Microphone Stream)" as AudioInput
+component "WebSocket Client\n(WebSocketApp)" as WSClient
+component "AssemblyAI Streaming API" as AssemblyAI
+component "Transcript Processor\n(Thread)" as TranscriptProcessor
+component "DeepL Translation API" as DeepL
+component "Speech Processor\n(Thread)" as SpeechProcessor
+component "Google Cloud\nText-to-Speech" as GoogleTTS
+component "Audio Player\n(Thread)" as AudioPlayer
+component "MQTT Client" as MQTTClient
+component "Mask Mouth Actuator\n(mask/mouth)" as Mask
+component "WAV Recorder" as WAVRecorder
+
+queue "transcript_queue" as TranscriptQueue
+queue "text_to_speech_queue" as TTSQueue
+queue "speak_queue" as SpeakQueue
+
+database "Recorded Frames\n(recorded_frames)" as RecordedFrames
+file "output.wav" as OutputWav
+file "recorded_audio_<timestamp>.wav" as RecordedWav
+
+User --> AudioInput : speaks into microphone
+
+Controller --> AudioInput : initialize/open stream
+Controller --> WSClient : create & start
+Controller --> TranscriptProcessor : start thread
+Controller --> SpeechProcessor : start thread
+Controller --> AudioPlayer : start thread
+
+AudioInput --> WSClient : audio chunks
+WSClient --> AssemblyAI : stream audio
+AssemblyAI --> WSClient : transcript messages / events
+
+WSClient --> TranscriptQueue : enqueue formatted transcript
+TranscriptProcessor --> TranscriptQueue : dequeue transcript
+TranscriptProcessor --> DeepL : translate EN -> DE
+DeepL --> TranscriptProcessor : translated text
+TranscriptProcessor --> TTSQueue : enqueue translated text
+
+SpeechProcessor --> TTSQueue : dequeue text
+SpeechProcessor --> GoogleTTS : synthesize speech
+GoogleTTS --> SpeechProcessor : audio_content
+SpeechProcessor --> SpeakQueue : enqueue audio bytes
+
+AudioPlayer --> SpeakQueue : dequeue audio
+AudioPlayer --> OutputWav : write playback file
+AudioPlayer --> MQTTClient : publish ON/OFF
+MQTTClient --> Mask : control mouth animation
+AudioPlayer --> AudioInput : <<independent>>
+AudioPlayer --> OutputWav : playback via aplay
+
+AudioInput --> RecordedFrames : append audio frames
+RecordedFrames --> WAVRecorder : on session close
+WAVRecorder --> RecordedWav : save session recording
+
+WSClient --> WAVRecorder : trigger on_close()
+WSClient --> Controller : error / close / terminate events
+
+note right of WSClient
+Handles callbacks:
+- on_open()
+- on_message()
+- on_error()
+- on_close()
+end note
+
+note bottom of TranscriptQueue
+Thread-safe communication
+between WebSocket callback
+and transcript processor
+end note
+
+note bottom of TTSQueue
+Thread-safe communication
+between translation stage
+and speech synthesis
+end note
+
+note bottom of SpeakQueue
+Thread-safe communication
+between TTS stage
+and playback stage
+end note
+
+@enduml

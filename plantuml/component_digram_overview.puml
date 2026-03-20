@@ -1,0 +1,54 @@
+@startuml
+title Whisper Mask Client – High-Level Komponentendiagramm
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+
+actor "User" as User
+
+component "Client Controller" as Controller
+component "Audio Capture" as AudioCapture
+component "Streaming STT Client" as STTClient
+component "AssemblyAI API" as AssemblyAI
+component "Transcript Processing" as TranscriptProcessing
+component "DeepL API" as DeepL
+component "Speech Synthesis" as SpeechSynthesis
+component "Google TTS API" as GoogleTTS
+component "Audio Playback" as AudioPlayback
+component "MQTT Mask Control" as MQTTControl
+component "WAV Recording" as WAVRecording
+
+queue "Transcript Queue" as Q1
+queue "TTS Queue" as Q2
+queue "Playback Queue" as Q3
+
+User --> AudioCapture : speech input
+
+Controller --> AudioCapture
+Controller --> STTClient
+Controller --> TranscriptProcessing
+Controller --> SpeechSynthesis
+Controller --> AudioPlayback
+
+AudioCapture --> STTClient : audio stream
+STTClient --> AssemblyAI : websocket audio stream
+AssemblyAI --> STTClient : transcripts/events
+
+STTClient --> Q1 : complete transcript
+TranscriptProcessing --> Q1 : consume
+TranscriptProcessing --> DeepL : translate text
+DeepL --> TranscriptProcessing : translated text
+TranscriptProcessing --> Q2 : enqueue text
+
+SpeechSynthesis --> Q2 : consume
+SpeechSynthesis --> GoogleTTS : synthesize
+GoogleTTS --> SpeechSynthesis : audio data
+SpeechSynthesis --> Q3 : enqueue audio
+
+AudioPlayback --> Q3 : consume
+AudioPlayback --> MQTTControl : mouth ON/OFF
+AudioCapture --> WAVRecording : raw audio frames
+STTClient --> WAVRecording : close session / save recording
+
+@enduml
