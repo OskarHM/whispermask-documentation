@@ -2,7 +2,7 @@
 This is the central documentation repository for the whisper mask.
 
 ## User Interface
-The code for the user interface (mouth) can be found here: https://github.com/OskarHM/rpi-rgb-led-matrix . It is a fork of the open source library: https://github.com/hzeller/rpi-rgb-led-matrix .
+The code for the user interface (mouth) can be found here: https://github.com/OskarHM/rpi-rgb-led-matrix . It is a fork from the open source library: https://github.com/hzeller/rpi-rgb-led-matrix .
 We have the most recent version already built on the raspberry Pi. 
 The command to start the visualisation is: 
 sudo ./demo -D13 --led-no-hardware-pulse --led-cols=96 --led-rows=48 --led-pwm-lsb-nanoseconds 130 --led-pwm-bits=11 --led-brightness=100 --led-slowdown-gpio=4 
@@ -17,8 +17,14 @@ The incompatability to other frameworks can be seen in this screenshot from a vi
 
 
 ## Translation pipeline
-The source code for the translation pipeline can be found here: https://github.com/OskarHM/api-based-translation . There is also a branch for an improved local_text_to_speech which we did not use in our prototoype. 
-The siemens-display-whisper-mask.local has all dependencies already installed. You just need to source the virtual environment and run the python script.
+The source code for the translation pipeline can be found here: https://github.com/OskarHM/api-based-translation . There is also a branch for an improved local_text_to_speech which we did not use in our prototoype.
+
+The siemens-display-whisper-mask.local raspberry Pi has all dependencies already installed. You just need to source the virtual environment and run the python script.
+ 
+Note: as this is API based you need to add the API-keys for the current services that we used. The translation and text to speech can be changed rather quick to another provider the transcription would be more complex. We used AssemblyAI for speech to text, DeepL API for the translation and Google API text to speech for text to speech. AssemblyAI and DeepL API are pretty straightforward to use, surprisingly the Googgle text to speech api was way worse and was not very intuitivly. So in a next iteration we might want to replace GoogleAPI with a simpler to use service. 
+
+All tokens we used where included in a free memberership. This is one big advantage of the current AI race ;) and definitly invites to play with AI services.
+
 The high level view can be found in the presentation:
 ![High Level Overview](doc/high_level_overview.png)
 
@@ -32,7 +38,8 @@ This is a more in depth representation which is for persons that do not like to 
 
 
 ## Communication
-The communication and the remote development of the two raspberies is based on avahi. 
+The communication and the remote development of the two raspberies is based on avahi.
+
 The rapsberry controlling the User Interface is reachable under this address: 
 whisperMask.local
 password: swhiscool
