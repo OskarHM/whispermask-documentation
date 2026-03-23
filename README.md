@@ -9,9 +9,11 @@ sudo ./demo -D13 --led-no-hardware-pulse --led-cols=96 --led-rows=48 --led-pwm-l
 
 We decided to integrate it inside the library so we can contribute it upstream because the mouth is a cool demo. D13 selects our demo case.
 
-The hardware setup was quite tedious and is replacable with a specified HUB75E adapter which we also desribed in our report. [Cable Management](doc/fragile_cable_management.jpeg)
+The hardware setup was quite tedious and is replacable with a specified HUB75E adapter which we also desribed in our report.
+ ![Cable Management](doc/fragile_cable_management.jpeg)
 
-The incompatability to other frameworks can be seen in this screenshot from a video: [Video anschauen](doc/video_non_working_ui.jpeg)
+The incompatability to other frameworks can be seen in this screenshot from a video:
+ ![Video Screenshot](doc/video_non_working_ui.jpeg)
 
 
 ## Translation pipeline
