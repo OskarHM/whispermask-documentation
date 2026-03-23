@@ -34,7 +34,8 @@ This is a more in depth representation which is for persons that do not like to 
 ![Component Diagram Technical](doc/component_diagram_technical.png)
 
 
-
+## Batch based approach 
+The batch based approach can be found here: https://github.com/Al-Nouiri/WhisperMask
 
 
 ## Communication
